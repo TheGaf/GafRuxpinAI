@@ -1,0 +1,69 @@
+# Teddy Ruxpin Bluetooth Lipsync (Minimal Animatronic Pi Setup)
+
+This project makes your Raspberry Pi Zero 2 W act as a Bluetooth speaker for your phone (OpenAI Voice, Spotify, etc.), while animating Teddy's mouth and eyes to the audio—no mic, no cloud, no API keys!
+
+---
+
+## QUICKSTART
+
+1. **Flash Pi with Raspberry Pi OS (Bookworm or later).**
+2. **Plug in USB audio dongle and powered speaker.**
+3. **Wire DRV8833 to Pi:**
+   - Mouth: IN1 = GPIO18 (PWM), IN2 = GPIO23 (DIR)
+   - Eyes:  IN3 = GPIO24, IN4 = GPIO25
+   - VCC = +5V (fused), GND = common ground
+
+4. **Boot, copy files, and run:**
+   ```bash
+   chmod +x install_bt_audio.sh
+   ./install_bt_audio.sh
+   ```
+
+5. **Pair phone using 'bluetoothctl' (see script output).**
+
+6. **Set USB dongle as default sink:**
+   - `pactl list short sinks`
+   - `pactl set-default-sink <alsa_output.usb-...-analog-stereo>`
+
+7. **Run the animatronic script:**
+   ```bash
+   python3 bt_lipsync_min.py
+   ```
+
+8. **Play audio from your phone (OpenAI, Spotify, etc.)**
+   - Teddy's mouth moves to speech/music, eyes blink every 4s.
+
+---
+
+## TUNING
+
+- Edit `bt_lipsync_min.py` top constants:
+    - `THRESH` (mouth open threshold, lower for more movement)
+    - `GAIN` (amplifies envelope, higher for softer audio)
+    - `LAT_MS` (Bluetooth latency, 120–220 typical)
+    - `BLINK_S`, `BLINK_MS` (eyes blink timing)
+
+## TROUBLESHOOTING
+
+- **No movement, but audio plays:**  
+  Double-check wiring, pin numbers, and ground.
+- **No monitor found:**  
+  Play audio and run `pactl set-default-sink` as above.
+- **Motors run backwards:**  
+  Swap output wires or flip DIR logic in script.
+- **Bluetooth won’t connect:**  
+  Use `bluetoothctl` and check device trust/pairing.
+- **Script crashes:**  
+  Try running as root (`sudo python3 ...`) or check permissions.
+
+---
+
+## NOTES
+
+- No mic or cloud: Only audio envelope is used (cartoon lipsync).
+- Can be used with any TTS/music app.
+- Script exits cleanly and releases GPIO on Ctrl+C.
+
+---
+
+Enjoy your magical, AI-powered Teddy Ruxpin!
