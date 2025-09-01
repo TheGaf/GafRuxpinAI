@@ -4,8 +4,17 @@
 set -e
 
 echo "Updating and installing dependencies..."
-sudo apt update
-sudo apt install -y bluez pulseaudio pulseaudio-module-bluetooth python3-pip python3-numpy python3-sounddevice python3-rpi.gpio mpg123
+
+# Recommend PipeWire stack for Bookworm+; PulseAudio also works, but don't mix both!
+if grep -q 'bookworm' /etc/os-release; then
+  echo "Detected Raspberry Pi OS Bookworm or later. Using PipeWire for Bluetooth audio."
+  sudo apt update
+  sudo apt install -y pipewire-audio wireplumber libspa-0.2-bluetooth pulseaudio-utils python3-pip python3-numpy python3-sounddevice python3-rpi.gpio mpg123
+else
+  echo "Non-Bookworm OS detected. Installing PulseAudio Bluetooth stack."
+  sudo apt update
+  sudo apt install -y bluez pulseaudio pulseaudio-module-bluetooth python3-pip python3-numpy python3-sounddevice python3-rpi.gpio mpg123
+fi
 
 echo "Enabling and starting bluetooth..."
 sudo systemctl enable bluetooth
